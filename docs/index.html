@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Arianee Technology Demonstration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="./app.css">
+  </head>
+
+  <body>
+    <header>
+      <nav class="navbar navbar-light bg-light">
+        <div class="container">
+          <span class="navbar-brand mr-auto">
+            <img src="https://www.arianee.org/wp-content/uploads/2018/04/logo-arianee.svg" height="24" class="d-inline-block align-top" alt="Arianee">
+            <strong class="ml-3">Brand Dashboard</strong>
+            <span class="badge badge-danger">Technology Demonstration</span>
+          </span>
+          <span class="">Account balance: <strong class="aria-quantity">????</strong> ARIA</span>
+          <a class="btn btn-outline-primary btn-sm ml-2" href="#buy">Buy More</a>
+        </div>
+      </nav>
+    </header>
+
+    <main role="main">
+      <section class="jumbotron text-center my-0">
+        <div class="container">
+          <h1 class="jumbotron-heading">Technology Demonstration</h1>
+          <p class="lead text-muted">This demo allows you, the Arianee customer, to purchase ARIA tokens and spend them to create certificates. Additional applications to spend your ARIA tokens may be added in the future.</p>
+          <p id="need-metamask" class="blink">Install MetaMask <strong>4.16.0 or greater</strong> to use this demo.</p>
+          <p id="need-ropsten" class="blink">Select Ropsten network to use this demo.</p>
+          <p id="need-enable" class="blink">Enable your account in MetaMask to use this demo.</p>
+          <p>
+            <a href="#buy" class="btn btn-primary my-2">Buy ARIA</a>
+            <a href="#create-certificate" class="btn btn-secondary my-2">Create certificate <small>(10 ARIA)</small></a>
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <div class="container py-5">
+          <h1>Your account</h1>
+          <p class="lead">
+            You are logged in with brand account <strong>Suvolli Watches</strong>. This account <strong>is</strong> authorized to create certificates and use the Arianee vendor interface.
+          </p>
+          <p>Account balance: <strong class="aria-quantity">????</strong> ARIA</p>
+          <p>Account manager: <strong>Jean-Marc Bellaiche</strong>, contact information <strong>jmb@arianee.org</strong></p>
+        </div>
+      </section>
+
+      <section>
+        <div class="container py-5">
+          <h1 id="buy">Buy ARIA</h1>
+          <p class="lead">
+            Use PayPal to purchase ARIA tokens and add to your account.
+          </p>
+          <p><button class="btn btn-primary buy-now-button">Buy Now <small>(<strike>0.10 EUR each</strike> free for limited time)</small></button></p>
+          <p id="buy-now-waiting" class="blink" style="display:none">Waiting for purchase transaction to complete.</p>
+          <p><a id="buy-now-transaction-link" style="display:none" target="_blank">Watch for transaction to complete. Then reload this page.</a></p>
+        </div>
+      </section>
+
+      <section>
+        <div class="container py-5">
+          <h1 id="create-certificate">Create certificate</h1>
+          <p class="lead">
+            Create your certificate of authenticity using the Arianee JSON Certificate Protocol.
+          </p>
+          <form>
+            <div class="form-group">
+              <label for="file">JSON Certificate</label>
+              <input id="file" type="file" class="form-control-file">
+            </div>
+          </form>
+          <p>File size: <strong class="file-size"></strong></p>
+          <p>File signature: <strong class="file-hash"></strong></p>
+          <p><button class="btn btn-primary create-button">Create <small>(10 ARIA each)</small></button></p>
+          <p id="create-waiting" class="blink" style="display:none">Waiting for transaction to complete.</p>
+          <p><a id="create-transaction-link" style="display:none" target="_blank">Watch for transaction to complete. Then reload this page.</a></p>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p>This technology demonstration created for Arianee by William Entriken. Contact William at <a target="_will" href="https://phor.net">https://phor.net</a>.</p>
+      </div>
+    </footer>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha3/0.8.0/sha3.min.js" integrity="sha256-8MpIdXZrWpb1JXVJccjsXDKzvX927WNtletZ0/Ny3oQ=" crossorigin="anonymous"></script>
+
+  <script src="./contractABI.js"></script>
+
+<!--  <script src="./app.js"></script> -->
+  <script>
+var fileHash = "";
+$(async function(){
+  // Requires MetaMask 4.16.0+
+  if (window.ethereum) {
+    window.web3 = new Web3(ethereum);
+    $('#need-metamask').hide();
+  } else {
+    console.log('Non-Ethereum browser detected. Install MetaMask.');
+    return;
+  }
+
+  window.web3.version.getNetwork((err, netId) => {
+    if (netId == "3") {
+      $('#need-ropsten').hide();
+    }
+  });
+
+  let ariaTokenContractAddress = '0x44ef0d6cc6f612839c4fd1521bbb693d4e9ae0ac';
+  ariaTokenContract = web3.eth.contract(ariaTokenABI).at(ariaTokenContractAddress);
+  let ariaCertificateContractAddress = '0x24dea705bcb99029ea8354af9424395a537b39a4';
+  ariaCertificateContract = web3.eth.contract(ariaCertificateABI).at(ariaCertificateContractAddress);
+
+  try {
+    await ethereum.enable();
+    $('#need-enable').hide();
+  } catch (error) {
+    console.log("ERROR: Enable account access and reload.");
+    return;
+  }
+
+  ariaTokenContract.balanceOf(web3.eth.defaultAccount, (error, amount) => {
+    console.log("ACCOUNT " + web3.eth.defaultAccount);
+    console.log("ARIA BALANCE " + amount);
+    $('.aria-quantity').text(amount.toLocaleString());
+  });
+
+  $("#file").change(function() {
+    $('.file-hash').text("");
+    fileHash = "";
+    if (this.files && this.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(event) {
+        var binary = event.target.result;
+        console.log("Loaded JSON file (no validation)");
+        $('.file-size').text(binary.length.toLocaleString());
+        $('.file-hash').text(keccak256(binary));
+        fileHash = keccak256(binary);
+      }
+      reader.readAsBinaryString(this.files[0]);
+    }
+  });
+
+  $('.buy-now-button').on('click', function(){
+    $('#buy-now-waiting').show();
+    ariaTokenContract.mint(web3.eth.defaultAccount, 100, function(error, transactionHash){
+      $('#buy-now-waiting').hide();
+      $('#buy-now-transaction-link').attr('href', "https://ropsten.etherscan.io/tx/"+transactionHash);
+      $('#buy-now-transaction-link').show();
+    });
+    console.log('buy');
+  });
+
+  $('.create-button').on('click', function(){
+    if (fileHash.length != 64) {
+      alert("Select a file before clicking that button.");
+      return;
+    }
+    $('#create-waiting').show();
+    // https://ethereum.stackexchange.com/a/19556
+    let parameter = String("0x" + fileHash).valueOf();
+    console.log(parameter);
+    ariaCertificateContract.create(parameter, function(error, transactionHash){
+      $('#create-waiting').hide();
+      $('#create-transaction-link').attr('href', "https://ropsten.etherscan.io/tx/"+transactionHash);
+      $('#create-transaction-link').show();
+    });
+    console.log('create');
+  });
+});
+
+  </script>
+</html>
