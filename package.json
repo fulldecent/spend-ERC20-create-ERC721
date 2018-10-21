@@ -1,0 +1,16 @@
+{
+  "name": "arianee-erc721-erc20-poc",
+  "version": "1.0.0",
+  "description": "A consumable token mechanism",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@0xcert/ethereum-erc721": "^1.10.0",
+    "@0xcert/ethereum-utils": "^1.1.0",
+    "openzeppelin-solidity": "^2.0.0-rc.3"
+  }
+}
