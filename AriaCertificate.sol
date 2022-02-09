@@ -1,7 +1,8 @@
-pragma solidity ^0.4.25;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-import "@0xcert/ethereum-erc721/contracts/tokens/NFToken.sol";
-import "@0xcert/ethereum-utils/contracts/ownership/Ownable.sol";
+import "./node_modules/@nibbstack/erc721/src/contracts/tokens/nf-token.sol";
+import "./node_modules/@nibbstack/erc721/src/contracts/ownership/ownable.sol";
 import {ERC20Spendable} from "./AriaToken.sol";
 
 /**

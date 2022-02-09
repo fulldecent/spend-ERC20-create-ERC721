@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@0xcert/ethereum-erc721": "^1.10.0",
-    "@0xcert/ethereum-utils": "^1.1.0",
-    "openzeppelin-solidity": "^2.0.0-rc.3"
+    "@nibbstack/erc721": "^2.6.1",
+    "@openzeppelin/contracts": "^4.4.2",
+    "@remix-project/remixd": "^0.5.6"
   }
 }

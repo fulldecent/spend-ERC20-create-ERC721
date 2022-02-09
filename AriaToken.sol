@@ -1,21 +1,21 @@
-pragma solidity ^0.4.25;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
-import "openzeppelin-solidity/token/ERC20/ERC20.sol";
-import "openzeppelin-solidity/token/ERC20/ERC20Mintable.sol";
-import "openzeppelin-solidity/access/Roles.sol";
+import "./node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./node_modules/@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /**
  * This is an access control role for entities that may spend tokens
  */
-contract SpenderRole {
-  using Roles for Roles.Role;
+abstract contract SpenderRole {
+  using EnumerableSet for EnumerableSet.AddressSet;
 
   event SpenderAdded(address indexed account);
   event SpenderRemoved(address indexed account);
 
-  Roles.Role private spenders;
+  EnumerableSet.AddressSet private _spenders;
 
-  constructor() internal {
+  constructor() {
     _addSpender(msg.sender);
   }
 
@@ -25,7 +25,7 @@ contract SpenderRole {
   }
 
   function isSpender(address account) public view returns (bool) {
-    return spenders.has(account);
+    return _spenders.contains(account);
   }
 
   function addSpender(address account) public onlySpender {
@@ -37,12 +37,12 @@ contract SpenderRole {
   }
 
   function _addSpender(address account) internal {
-    spenders.add(account);
+    _spenders.add(account);
     emit SpenderAdded(account);
   }
 
   function _removeSpender(address account) internal {
-    spenders.remove(account);
+    _spenders.remove(account);
     emit SpenderRemoved(account);
   }
 }
@@ -50,7 +50,7 @@ contract SpenderRole {
 /**
  * @dev ERC20 spender logic
  */
-contract ERC20Spendable is ERC20, SpenderRole {
+abstract contract ERC20Spendable is ERC20, SpenderRole {
   /**
    * @dev Function to mint tokens
    * @param from The address that will spend the tokens
@@ -70,7 +70,9 @@ contract ERC20Spendable is ERC20, SpenderRole {
   }
 }
 
-contract AriaToken is ERC20, ERC20Mintable, ERC20Spendable {
+contract AriaToken is ERC20, ERC20Spendable {
+
+    constructor() ERC20("NAME", "NAME") {}
 
     /**
      * @dev For testing purposes, this allows anybody to mint tokens. Simply

@@ -42,9 +42,16 @@ When you deploy the certificate and token contracts then you will be the owner w
 
 I recommend saving these files on localhost and then developing using [Remix IDE](http://remix.ethereum.org). Follow this process using the command line:
 
-1. Install remixd using `npm install remixd`
+1. Install remixd and smart contract dependencies
+
+   ```sh
+   npm install
+   ```
+
 2. Switch into the project folder and run `remixd -s .`
+
 3. Open Remix IDE and click the connect button
+
 4. Develop and run the contract from Remix IDE
 
 ## Attribution
