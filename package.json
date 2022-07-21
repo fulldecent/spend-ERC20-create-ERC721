@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@nibbstack/erc721": "^2.6.1",
-    "@openzeppelin/contracts": "^4.4.2",
+    "@openzeppelin/contracts": "^4.7.1",
     "@remix-project/remixd": "^0.5.6"
   }
 }
